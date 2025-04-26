@@ -33,17 +33,17 @@ for binary outcomes, using real data from the 2020 Public Library Survey (PLS).
    ```bash
    python scripts/run_calibration.py
    
--You will see the calibrated synthetic sample size k* printed.
--A plot of the miscoverage curve G(k) vs. k will appear.
+>You will see the calibrated synthetic sample size k* printed.
+>A plot of the miscoverage curve G(k) vs. k will appear.
 
 ## 📋 What’s Inside
 
 1. **scripts/run_calibration.py**
 Main script that:
 
--Loads three binary outcome variables (VISITS, TOTCIR, TOTPRO) from PLS AE file.
--Binarizes each around its median to form real_data[j].
--Simulates llm_data[j] by adding a fixed bias to each true proportion.
+>Loads three binary outcome variables (VISITS, TOTCIR, TOTPRO) from PLS AE file.
+>Binarizes each around its median to form real_data[j].
+>Simulates llm_data[j] by adding a fixed bias to each true proportion.
 
 Implements:
 
