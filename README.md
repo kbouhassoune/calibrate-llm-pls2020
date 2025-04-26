@@ -35,7 +35,7 @@ python scripts/run_calibration.py
 *You will see the calibrated synthetic sample size k* printed.
 *A plot of the miscoverage curve G(k) vs. k will appear.
 
-📋 What’s Inside
+## 📋 What’s Inside
 
 1. scripts/run_calibration.py
 Main script that:
@@ -62,7 +62,7 @@ pandas
 matplotlib
 scipy
 
-⚙️ Algorithm Parameters
+## ⚙️ Algorithm Parameters
 In run_calibration.py, you can adjust:
 
 vars_of_interest: list of PLS AE columns to calibrate (default: ["VISITS","TOTCIR","TOTPRO"]).
