@@ -24,8 +24,6 @@ for binary outcomes, using real data from the 2020 Public Library Survey (PLS).
 
 2. Create & activate a virtual environment
 
-bash
-Copier le code
 python -m venv venv
 source venv/bin/activate    # macOS/Linux
 venv\Scripts\activate       # Windows
@@ -33,23 +31,18 @@ pip install -r requirements.txt
 
 3. Run the calibration
 
-bash
-Copier le code
 python scripts/run_calibration.py
-You will see the calibrated synthetic sample size k* printed.
-
-A plot of the miscoverage curve G(k) vs. k will appear.
+*You will see the calibrated synthetic sample size k* printed.
+*A plot of the miscoverage curve G(k) vs. k will appear.
 
 📋 What’s Inside
 
 1. scripts/run_calibration.py
 Main script that:
 
-Loads three binary outcome variables (VISITS, TOTCIR, TOTPRO) from PLS AE file.
-
-Binarizes each around its median to form real_data[j].
-
-Simulates llm_data[j] by adding a fixed bias to each true proportion.
+-Loads three binary outcome variables (VISITS, TOTCIR, TOTPRO) from PLS AE file.
+-Binarizes each around its median to form real_data[j].
+-Simulates llm_data[j] by adding a fixed bias to each true proportion.
 
 Implements:
 
@@ -64,8 +57,6 @@ Plots G(k) with lines at α/2 and k*.
 2. requirements.txt
 Python dependencies:
 
-txt
-Copier le code
 numpy
 pandas
 matplotlib
