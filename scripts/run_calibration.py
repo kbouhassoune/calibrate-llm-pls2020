@@ -1,30 +1,11 @@
 #!/usr/bin/env python3
-"""
-Calibration of LLM-Based Survey Simulation on PLS 2020 Data
-
-This implements Huang et al. (2025) Algorithm 1 for binary responses:
-1. Load real binary outcomes from PLS_FY20_AE_pud20i.csv.
-2. For each chosen variable, binarize around its median → real_data[j].
-3. Simulate LLM “responses” by adding a fixed bias to the true proportion.
-4. For k=0…K, build the dilated CLT interval I_j(k) (Eq. 2.4) and compute G(k) (Eq. 2.6).
-5. Select k* = max{k: ∀i≤k, G(i) ≤ α/2} (Eq. 2.7).
-6. Plot G(k) and report k*.
-7. (Optional) Empirically verify coverage of I(k*) via new draws (Thm 2.1).
-
-Usage:
-  python scripts/run_calibration.py
-
-Author: Kenza Bouhassoune
-Date: 2025-04-25
-"""
-
 import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-# 1) Paths and parameters
+#Paths and parameters
 SCRIPT_DIR = os.path.dirname(__file__)                 # .../scripts
 REPO_ROOT  = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
 DATA_PATH  = os.path.join(REPO_ROOT, "Data", "PLS2020", "PLS_FY20_AE_pud20i.csv")
@@ -35,13 +16,13 @@ alpha = 0.05      # significance level
 c = np.sqrt(2)    # dilation factor
 bias = 0.1        # LLM misalignment bias
 
-# 2) Load real data
+#Load real data
 print(">> Loading PLS AE from:", DATA_PATH)
 if not os.path.exists(DATA_PATH):
     raise FileNotFoundError(f"File not found: {DATA_PATH}")
 df = pd.read_csv(DATA_PATH, encoding="latin1")
 
-# 3) Calibration functions 
+#Calibration functions 
 def dilated_clt_interval(samples, alpha, c):
     """
     Eq. 2.4: I(k) = [ ybar ± c * (s/√k) * z_{1-α/2} ], or [0,1] if k=0.
@@ -58,7 +39,7 @@ def dilated_clt_interval(samples, alpha, c):
 def calibrate_k_star(real_data, llm_data, alpha, c):
     """
     Compute G(k)=1/m ∑_j 1{mean(real_j) ∉ I_j(k)}, then
-    k* = max{k: ∀i≤k, G(i) ≤ α/2}.
+    k* = max{k: ∀i≤k, G(i) ≤ α/2}
     """
     m = len(real_data)
     G = np.zeros(K+1)
@@ -72,7 +53,7 @@ def calibrate_k_star(real_data, llm_data, alpha, c):
     valid = [i for i in range(K+1) if np.all(G[:i+1] <= alpha/2)]
     return (max(valid) if valid else 0), G
 
-# 4) Prepare m binary real_data arrays 
+#Prepare m binary real_data arrays 
 vars_of_interest = ["VISITS", "TOTCIR", "TOTPRO"]  # choose m=3 columns
 real_data = []
 for var in vars_of_interest:
@@ -83,18 +64,18 @@ for var in vars_of_interest:
     binarized = (series > med).astype(int).to_numpy()
     real_data.append(binarized)
 
-# 5) Simulate LLM responses 
+#Simulate LLM responses 
 llm_data = []
 for arr in real_data:
     p_true = arr.mean()
     p_llm = float(np.clip(p_true + bias, 0, 1))
     llm_data.append(np.random.binomial(1, p_llm, size=K))
 
-# 6) Calibrate and report k*
+#Calibrate and report k*
 k_star, G = calibrate_k_star(real_data, llm_data, alpha, c)
 print(f"Calibrated synthetic sample size k* = {k_star}")
 
-# 7) Plot G(k)
+#Plot G(k)
 plt.figure(figsize=(8,4))
 plt.plot(G, "-o", label="G(k) miscoverage")
 plt.axhline(alpha/2, color="red", linestyle="--", label=f"α/2 = {alpha/2}")
